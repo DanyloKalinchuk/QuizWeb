@@ -103,4 +103,16 @@ public class Quiz {
     public void setType(Quiz.QzType type){
         this.type = type;
     }
+
+    public List<Question> getQuestions(){
+        return this.questions;
+    }
+
+    public void addQuestion(Question question){
+        this.questions.add(question);
+    }
+
+    public void setQuestions(List<Question> questions){
+        this.questions = questions;
+    }
 }

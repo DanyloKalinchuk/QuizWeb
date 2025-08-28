@@ -2,18 +2,18 @@ package com.prj2.prj2.quiz.question;
 
 import java.util.List;
 
-import com.prj2.prj2.quiz.option.AnswerOption;
+import com.prj2.prj2.quiz.option.AnswerOptionDTO;
 
 public class QuestionDTO {
     private Long questionId;
     private String questionContent;
     private Integer questionNumber;
-    private List<AnswerOption> answerOptions;
+    private List<AnswerOptionDTO> answerOptions;
     private Long quizId;
 
     public QuestionDTO() {}
 
-    public QuestionDTO(Long questionId, String questionContent, Integer questionNumber, List<AnswerOption> answerOptions){
+    public QuestionDTO(Long questionId, String questionContent, Integer questionNumber, List<AnswerOptionDTO> answerOptions){
         this.questionId = questionId;
         this.questionContent = questionContent;
         this.questionNumber = questionNumber;
@@ -44,11 +44,15 @@ public class QuestionDTO {
         this.questionNumber = questionNumber;
     }
 
-    public List<AnswerOption> getAnswerOptions(){
+    public List<AnswerOptionDTO> getAnswerOptions(){
         return this.answerOptions;
     }
 
-    public void setAnswerOptions(List<AnswerOption> answerOptions){
+    public void addAnswerOption(AnswerOptionDTO answerOptionDTO){
+        this.answerOptions.add(answerOptionDTO);
+    }
+
+    public void setAnswerOptions(List<AnswerOptionDTO> answerOptions){
         this.answerOptions = answerOptions;
     }
 

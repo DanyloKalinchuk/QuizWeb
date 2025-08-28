@@ -2,6 +2,8 @@ package com.prj2.prj2.quiz.question;
 
 import java.util.List;
 
+import org.hibernate.validator.constraints.Length;
+
 import com.prj2.prj2.quiz.Quiz;
 import com.prj2.prj2.quiz.option.AnswerOption;
 
@@ -29,6 +31,7 @@ public class Question {
     @JoinColumn(name = "quiz_id", nullable = false)
     private Quiz quiz;
 
+    @Length(min = 1, max = 400, message = "Question Content must contain between 1 and 400 characters")
     @Column(name = "question_content")
     private String questionContent;
 
@@ -77,5 +80,17 @@ public class Question {
 
     public void setQuestionNumber(Integer questionNumber){
         this.questionNumber = questionNumber;
+    }
+
+    public List<AnswerOption> getAnswerOptions(){
+        return this.answerOptions;
+    }
+
+    public void addAnswerOption(AnswerOption answerOption){
+        this.answerOptions.add(answerOption);
+    }
+
+    public void setAnswerOptions(List<AnswerOption> answerOptions){
+        this.answerOptions = answerOptions;
     }
 }

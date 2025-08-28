@@ -1,47 +1,48 @@
 package com.prj2.prj2.quiz.question;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.prj2.prj2.quiz.QuizRepository;
+import com.prj2.prj2.quiz.Quiz;
 import com.prj2.prj2.quiz.option.AnswerOption;
-import com.prj2.prj2.quiz.option.AnswerOptionRepository;
+import com.prj2.prj2.quiz.option.AnswerOptionDTO;
+import com.prj2.prj2.quiz.option.AnswerOptionMapper;
 
 @Component
 public class QuestionMapper {
     @Autowired
-    private AnswerOptionRepository answerOptionRepository;
-    @Autowired
-    private QuizRepository quizRepository;
+    private AnswerOptionMapper answerOptionMapper;
 
     public QuestionDTO toDTO(Question question){
-        List<AnswerOption> answerOptions = answerOptionRepository.findByQuestion_Id(question.getId());
-        QuestionDTO questionDTO = new QuestionDTO(question.getId(), question.getQuestionContent(), question.getQuestionNumber(), answerOptions);
+        QuestionDTO questionDTO = new QuestionDTO();
+
+        questionDTO.setQuestionId(question.getId());
+        questionDTO.setQuestionContent(question.getQuestionContent());
+        questionDTO.setQuestionNumber(question.getQuestionNumber());
+        questionDTO.setQuizId(question.getQuizId());
+
+        for (AnswerOption answerOption : question.getAnswerOptions()){
+            AnswerOptionDTO answerOptionDTO = answerOptionMapper.toDTO(answerOption);
+            questionDTO.addAnswerOption(answerOptionDTO);
+        }
+
         return questionDTO;
     }
 
-    public Question toEntity(QuestionDTO questionDTO){
-        Question question = new Question(questionDTO.getQuestionId(), quizRepository.findById(questionDTO.getQuizID()).orElseThrow(),
-        questionDTO.getQuestionContent(), questionDTO.getQuestionNumber());
+    public Question toEntity(QuestionDTO questionDTO, Quiz quiz){
+        Question question = new Question();
+
+        question.setId(questionDTO.getQuestionId());
+        question.setQuiz(quiz);
+        question.setQuestionContent(questionDTO.getQuestionContent());
+        question.setQuestionNumber(questionDTO.getQuestionNumber());
+
+        for (AnswerOptionDTO answerOptionDTO : questionDTO.getAnswerOptions()){
+            AnswerOption answerOption = answerOptionMapper.toEntity(answerOptionDTO, question);
+            question.addAnswerOption(answerOption);
+        }
+
         return question;
     }
 
-    public List<QuestionDTO> listToDTO(List<Question> questions){
-        List<QuestionDTO> questionsDTO = new ArrayList<QuestionDTO>();
-        for (Question question : questions){
-            questionsDTO.add(toDTO(question));
-        }
-        return questionsDTO;
-    }
-
-    public List<Question> listToEntity(List<QuestionDTO> questionsDTO){
-        List<Question> questions = new ArrayList<Question>();
-        for (QuestionDTO questionDTO : questionsDTO){
-            questions.add(toEntity(questionDTO));
-        }
-        return questions;
-    }
 }

@@ -4,34 +4,25 @@ import java.util.List;
 
 import com.prj2.prj2.quiz.question.QuestionDTO;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+
 public class QuizDTO {
     private Long quizId;
     private Long creatorId;
     private String name;
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private Quiz.QzType type;
     private List<QuestionDTO> questions;
 
     public QuizDTO() {}
-
-    public QuizDTO(Long quizId, Long creatorId, String name, String type, List<QuestionDTO> questions){
-        this.quizId = quizId;
-        this.creatorId = creatorId;
-        this.name = name;
-        this.type = type;
-        this.questions = questions;
-    }
 
     public QuizDTO(Long quizId, Long creatorId, String name, Quiz.QzType type, List<QuestionDTO> questions){
         this.quizId = quizId;
         this.creatorId = creatorId;
         this.name = name;
+        this.type = type;
         this.questions = questions;
-
-        if (type.equals(Quiz.QzType.SINGLE_OPTN)){
-            this.type = "SINGLE_OPTN";
-        }else if (type.equals(Quiz.QzType.MULTIPLE_OPTN)){
-            this.type = "MULTIPLE_OPTN";
-        }
     }
 
     public Long getQuizId(){
@@ -58,20 +49,20 @@ public class QuizDTO {
         this.name = name;
     }
 
-    public String getType(){
+    public Quiz.QzType getType(){
         return this.type;
     }
 
     public void setType(Quiz.QzType type){
-        if (type.equals(Quiz.QzType.SINGLE_OPTN)){
-            this.type = "SINGLE_OPTN";
-        }else if (type.equals(Quiz.QzType.MULTIPLE_OPTN)){
-            this.type = "MULTIPLE_OPTN";
-        }
+        this.type = type;
     }
 
     public List<QuestionDTO> getQuestions(){
         return this.questions;
+    }
+
+    public void addQuestion(QuestionDTO questionDTO){
+        this.questions.add(questionDTO);
     }
 
     public void setQuestions(List<QuestionDTO> questions){

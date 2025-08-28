@@ -1,17 +1,14 @@
 package com.prj2.prj2.quiz;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.prj2.prj2.quiz.option.AnswerOption;
-import com.prj2.prj2.quiz.option.AnswerOptionRepository;
-import com.prj2.prj2.quiz.question.Question;
-import com.prj2.prj2.quiz.question.QuestionDTO;
-import com.prj2.prj2.quiz.question.QuestionMapper;
-import com.prj2.prj2.quiz.question.QuestionRepository;
+import com.prj2.prj2.user.User;
+import com.prj2.prj2.user.UserRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -20,20 +17,23 @@ public class QuizService {
     @Autowired
     private QuizRepository quizRepository;
     @Autowired
-    private QuestionRepository questionRepository;
-    @Autowired
-    private AnswerOptionRepository answerOptionRepository;
+    private UserRepository userRepository;
     @Autowired
     private QuizMapper quizMapper;
-    @Autowired
-    private QuestionMapper questionMapper;
 
     public List<QuizDTO> getAll(){
-        return quizMapper.listToDTO(quizRepository.findAll());
+        List<QuizDTO> quizzesDTO = new ArrayList<QuizDTO>();
+        
+        for (Quiz quiz : quizRepository.findAll()){
+            quizzesDTO.add(quizMapper.toDTO(quiz));
+        }
+
+        return quizzesDTO;
     }
 
     public QuizDTO getById(Long id){
         Optional<Quiz> existingQuiz = quizRepository.findById(id);
+
         if (existingQuiz.isPresent()){
             return quizMapper.toDTO(existingQuiz.get());
         }
@@ -41,52 +41,51 @@ public class QuizService {
     }
 
     public List<QuizDTO> getByCreatorId(Long creatorId){
-        return quizMapper.listToDTO(quizRepository.findByCreator_Id(creatorId));
+        List<QuizDTO> quizzesDTO = new ArrayList<QuizDTO>();
+
+        for (Quiz quiz : quizRepository.findByCreator_Id(creatorId)){
+            quizzesDTO.add(quizMapper.toDTO(quiz));
+        }
+        return quizzesDTO;
     }
 
     public List<QuizDTO> getByName(String name){
-        return quizMapper.listToDTO(quizRepository.findByNameContainingIgnoreCase(name));
+        List<QuizDTO> quizzesDTO = new ArrayList<QuizDTO>();
+
+        for (Quiz quiz : quizRepository.findByNameContainingIgnoreCase(name)){
+            quizzesDTO.add(quizMapper.toDTO(quiz));
+        }
+        return quizzesDTO;
     }
 
     public QuizDTO addQuiz(QuizDTO quizDTO){
-        quizRepository.save(quizMapper.toEntity(quizDTO));
-        
-        for (QuestionDTO questionDTO : quizDTO.getQuestions()){
-            questionRepository.save(questionMapper.toEntity(questionDTO));
-            for (AnswerOption answerOption : questionDTO.getAnswerOptions()){
-                answerOptionRepository.save(answerOption);
-            }
-        }
+        Optional<User> existingUser = userRepository.findById(quizDTO.getCreatorId());
 
-        return quizDTO;
+        if (existingUser.isPresent()){
+            Quiz quiz = quizMapper.toEntity(quizDTO, existingUser.get());
+            quizRepository.save(quiz);
+            return quizDTO;
+        }
+        return null;
     }
 
     public QuizDTO updateQuiz(QuizDTO quizDTO){
         Optional<Quiz> existingQuiz = quizRepository.findById(quizDTO.getQuizId());
+        Optional<User> existingUser = userRepository.findById(quizDTO.getCreatorId());
         
-        if (existingQuiz.isPresent()){
-            for (QuestionDTO questionDTO : quizDTO.getQuestions()){
-                questionRepository.save(questionMapper.toEntity(questionDTO));
-                for (AnswerOption answerOption : questionDTO.getAnswerOptions()){
-                    answerOptionRepository.save(answerOption);
-                }
-            }
+        if (existingQuiz.isPresent() && existingUser.isPresent()){
+            Quiz quiz = quizMapper.toEntity(quizDTO, existingUser.get());
 
-            return quizMapper.toDTO(quizRepository.save(quizMapper.toEntity(quizDTO)));
+            return quizMapper.toDTO(quizRepository.save(quiz));
         }
         return null;
     }
 
     @Transactional
     public Long deleteQuiz(Long quizId){
-        Optional<Quiz> quiz = quizRepository.findById(quizId);
+        Optional<Quiz> existingQuiz = quizRepository.findById(quizId);
 
-        if (quiz.isPresent()){
-            List<Question> questions = questionRepository.findByQuiz_IdOrderByQuestionNumberAsc(quizId);
-            for (Question question : questions){
-                answerOptionRepository.deleteAllByQuestion_Id(question.getId());
-            }
-            questionRepository.deledeleteAllByQuiz_Id(quizId);
+        if (existingQuiz.isPresent()){
             quizRepository.deleteById(quizId);
             return quizId;
         }
