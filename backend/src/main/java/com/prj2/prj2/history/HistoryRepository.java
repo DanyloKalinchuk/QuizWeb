@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface HistoryRepository extends JpaRepository<History, Long> {
-    public List<History> finndByUser_Id(Long userId);
+    public List<History> findByUser_Id(Long userId);
     public List<History> findByQuiz_Id(Long quizId);
     public List<History> findAllByOrderByTakenAtDesc();
 }

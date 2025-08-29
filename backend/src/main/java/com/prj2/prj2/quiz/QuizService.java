@@ -7,6 +7,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.prj2.prj2.comment.Comment;
+import com.prj2.prj2.comment.CommentRepository;
 import com.prj2.prj2.user.User;
 import com.prj2.prj2.user.UserRepository;
 
@@ -20,6 +22,8 @@ public class QuizService {
     private UserRepository userRepository;
     @Autowired
     private QuizMapper quizMapper;
+    @Autowired
+    private CommentRepository commentRepository;
 
     public List<QuizDTO> getAll(){
         List<QuizDTO> quizzesDTO = new ArrayList<QuizDTO>();
@@ -62,7 +66,8 @@ public class QuizService {
         Optional<User> existingUser = userRepository.findById(quizDTO.getCreatorId());
 
         if (existingUser.isPresent()){
-            Quiz quiz = quizMapper.toEntity(quizDTO, existingUser.get());
+            List<Comment> comments = commentRepository.findByQuiz_Id(quizDTO.getQuizId());
+            Quiz quiz = quizMapper.toEntity(quizDTO, existingUser.get(), comments);
             quizRepository.save(quiz);
             return quizDTO;
         }
@@ -74,7 +79,8 @@ public class QuizService {
         Optional<User> existingUser = userRepository.findById(quizDTO.getCreatorId());
         
         if (existingQuiz.isPresent() && existingUser.isPresent()){
-            Quiz quiz = quizMapper.toEntity(quizDTO, existingUser.get());
+            List<Comment> comments = commentRepository.findByQuiz_Id(quizDTO.getQuizId());
+            Quiz quiz = quizMapper.toEntity(quizDTO, existingUser.get(), comments);
 
             return quizMapper.toDTO(quizRepository.save(quiz));
         }

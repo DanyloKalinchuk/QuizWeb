@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.hibernate.validator.constraints.Length;
 
+import com.prj2.prj2.comment.Comment;
 import com.prj2.prj2.quiz.question.Question;
 import com.prj2.prj2.user.User;
 
@@ -50,6 +51,9 @@ public class Quiz {
 
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Question> questions;
+
+    @OneToMany(mappedBy = "quiz", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Comment> comments;
 
     public Quiz() {}
 

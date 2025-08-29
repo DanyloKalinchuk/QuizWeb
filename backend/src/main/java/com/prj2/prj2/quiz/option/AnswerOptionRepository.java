@@ -8,5 +8,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AnswerOptionRepository extends JpaRepository<AnswerOption, Long> {
     public List<AnswerOption> findByQuestion_Id(Long questionId);
-    public void deleteAllByQuestion_Id(Long questionId);
 }

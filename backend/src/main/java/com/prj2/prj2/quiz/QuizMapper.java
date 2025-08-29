@@ -1,8 +1,11 @@
 package com.prj2.prj2.quiz;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.prj2.prj2.comment.Comment;
 import com.prj2.prj2.quiz.question.Question;
 import com.prj2.prj2.quiz.question.QuestionDTO;
 import com.prj2.prj2.quiz.question.QuestionMapper;
@@ -29,7 +32,7 @@ public class QuizMapper {
         return quizDTO;
     }
 
-    public Quiz toEntity(QuizDTO quizDTO, User user){
+    public Quiz toEntity(QuizDTO quizDTO, User user, List<Comment> comments){
         Quiz quiz = new Quiz();
 
         quiz.setId(quizDTO.getQuizId());

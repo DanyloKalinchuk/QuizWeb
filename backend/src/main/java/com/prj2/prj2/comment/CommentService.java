@@ -12,6 +12,8 @@ import com.prj2.prj2.quiz.QuizRepository;
 import com.prj2.prj2.user.User;
 import com.prj2.prj2.user.UserRepository;
 
+import jakarta.transaction.Transactional;
+
 @Component
 public class CommentService {
     @Autowired
@@ -60,6 +62,29 @@ public class CommentService {
         if (user.isPresent() && quiz.isPresent()){
             Comment comment = commentMapper.toEntity(commentDTO, user.get(), quiz.get());
             return commentMapper.toDTO(commentRepository.save(comment));
+        }
+        return null;
+    }
+
+    public CommentDTO updateComment(CommentDTO commentDTO){
+        Optional<User> user = userRepository.findById(commentDTO.getUserId());
+        Optional<Quiz> quiz = quizRepository.findById(commentDTO.getQuizId());
+        Optional<Comment> comment = commentRepository.findById(commentDTO.getId());
+
+        if (user.isPresent() && quiz.isPresent() && comment.isPresent()){
+            Comment updatedComment = commentMapper.toEntity(commentDTO, user.get(), quiz.get());
+            return commentMapper.toDTO(commentRepository.save(updatedComment));
+        }
+        return null;
+    }
+
+    @Transactional
+    public Long deleteComment(Long id){
+        Optional<Comment> comment = commentRepository.findById(id);
+
+        if (comment.isPresent()){
+            commentRepository.deleteById(id);
+            return id;
         }
         return null;
     }

@@ -8,5 +8,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
     public List<Question> findByQuiz_IdOrderByQuestionNumberAsc(Long quizId);
-    public void deledeleteAllByQuiz_Id(Long quizId);
 }

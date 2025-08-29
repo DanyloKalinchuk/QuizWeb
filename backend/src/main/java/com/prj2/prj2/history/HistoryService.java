@@ -37,7 +37,7 @@ public class HistoryService {
     public List<HistoryDTO> getByUserId(Long userId){
         List<HistoryDTO> historyDTOs = new ArrayList<HistoryDTO>();
 
-        for (History history : historyRepository.finndByUser_Id(userId)){
+        for (History history : historyRepository.findByUser_Id(userId)){
             historyDTOs.add(historyMapper.toDTO(history));
         }
         return historyDTOs;
